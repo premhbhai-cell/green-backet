@@ -1,0 +1,8 @@
+GREEN BASKET - revised frontend
+Every fresh page load / refresh opens the buyer type selection gate.
+Retailer / Distributor choice filters the products for that session.
+Owner dashboard login is a normal email + password form (not prompt popups).
+Admin: greenbacket@gmail.com
+Password: greenbacket5252
+The admin interface manages product prices/MOQ, browser-stored orders, inventory, shipping and editable content/settings.
+IMPORTANT: Static HTML stores admin data only in this browser and credentials are visible in source. It is not secure production authentication and does not synchronize across devices. A real WordPress-style owner-only control panel requires server-side authentication + database/CMS. Checkout currently records demo orders; payment gateway is not connected.

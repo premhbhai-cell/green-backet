@@ -142,4 +142,186 @@ document.querySelectorAll("#pill a[data-r]").forEach(a=>a.classList.toggle("on",
 $("#wa").href=wa(h.startsWith("p-")?"Hello, I want to know about "+(pr(h.slice(2))||{}).n:"Hello Green Basket, I want to know more about your products");initSl()}
 $("#hs").onkeydown=e=>{if(e.key=="Enter"){location.hash!="#shop"?location.hash="shop":route()}};
 addEventListener("hashchange",()=>route());ref();route();
-</script></body></html>
+</script>
+<style>
+#gb-role-gate,#gb-admin-login,#gb-admin{position:fixed;inset:0;z-index:99999;display:none}
+#gb-role-gate{background:rgba(7,22,12,.88);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:18px}
+.gb-modal{width:min(760px,100%);background:#fff;color:#183321;border-radius:24px;padding:28px;box-shadow:0 25px 90px #0006}
+.gb-modal h2{font-size:27px;margin:6px 0 8px;color:#155c2a}.gb-muted{color:#68766b}
+.gb-roles{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:22px}
+.gb-role{border:2px solid #dce9df;border-radius:18px;padding:24px 18px;text-align:left;background:#f8fff9;color:#183321;cursor:pointer;transition:.2s}
+.gb-role:hover{border-color:#168b36;transform:translateY(-3px);box-shadow:0 12px 28px #168b3620}
+.gb-role b{display:block;font-size:21px;margin:9px 0}.gb-role span{font-size:34px}
+.gb-admin-trigger{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:40px;height:40px;flex:none;border:1px solid #dce8de;border-radius:11px;background:#f2faf3;color:#145c2a;font-size:18px;cursor:pointer}
+.gb-admin-trigger:hover{background:#dff2e2}
+@media(max-width:520px){.hd{gap:7px;padding:0 9px}.lg{font-size:16px;gap:5px}.lg img{width:32px;height:32px}.sb{height:38px;padding:0 8px}.gb-admin-trigger{width:36px;height:36px}.cb{height:38px;padding:0 10px}}
+#gb-admin-login{background:#07170dcc;backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px}
+#gb-admin-login .gb-modal{max-width:430px}
+.gb-field{display:block;width:100%;padding:12px 13px;margin:7px 0 14px;border:1px solid #ccd9ce;border-radius:9px;font:inherit}
+.gb-btn{border:0;border-radius:9px;padding:11px 16px;background:#147b2d;color:#fff;font-weight:800;cursor:pointer}
+.gb-btn.secondary{background:#eaf2eb;color:#1b4926}.gb-btn.red{background:#a62b2b}
+#gb-admin{background:#f1f5f1;color:#1e3022;overflow:auto;font-family:inherit}
+.gb-admin-shell{max-width:1400px;margin:auto;padding:20px}
+.gb-admin-top{background:#fff;border:1px solid #dce5dc;border-radius:14px;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.gb-admin-grid{display:grid;grid-template-columns:230px 1fr;gap:15px;margin-top:15px}
+.gb-admin-nav,.gb-admin-main{background:#fff;border:1px solid #dce5dc;border-radius:14px;padding:15px}
+.gb-admin-nav button{width:100%;display:block;text-align:left;border:0;background:#f1f6f1;color:#23442a;padding:12px;border-radius:8px;margin:4px 0;font-weight:700;cursor:pointer}
+.gb-admin-nav button:hover{background:#dcefe0}
+.gb-admin-main h2{margin:0 0 14px;color:#174f27}
+.gb-admin-table-wrap{overflow:auto}.gb-admin-table{border-collapse:collapse;width:100%;min-width:650px}
+.gb-admin-table th,.gb-admin-table td{padding:10px;border-bottom:1px solid #e6ece6;text-align:left;font-size:13px}
+.gb-admin-table input,.gb-admin-main input,.gb-admin-main textarea,.gb-admin-main select{padding:9px;border:1px solid #ccd8ce;border-radius:7px;width:100%;box-sizing:border-box}
+.gb-admin-note{background:#fff8dc;border:1px solid #f0df9a;padding:12px;border-radius:9px;margin:12px 0;font-size:13px}
+.gb-admin-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.gb-admin-card{padding:17px;background:#f5faf5;border:1px solid #e0eae0;border-radius:12px}
+.gb-admin-card strong{font-size:23px;display:block;color:#145c2a}
+@media(max-width:650px){.gb-roles{grid-template-columns:1fr}.gb-modal{padding:22px 16px}.gb-admin-grid{grid-template-columns:1fr}.gb-admin-nav{display:flex;overflow:auto;gap:5px}.gb-admin-nav button{white-space:nowrap;width:auto}.gb-admin-shell{padding:10px}}
+</style>
+<div id="gb-role-gate" role="dialog" aria-modal="true">
+ <div class="gb-modal">
+  <div style="font-size:40px">🌿</div><h2>Welcome to Green Basket</h2>
+  <p class="gb-muted">Choose how you buy from Green Basket. The store will remain locked until you select Retailer or Wholesaler / Distributor. Product catalogue, rates, minimum order and transport will then match your business type.</p>
+  <div class="gb-roles">
+   <button class="gb-role" onclick="gbChoose('R')"><span>🛒</span><b>Retailer</b><small>Minimum order: 100 kg<br>Retailer product range and rates</small></button>
+   <button class="gb-role" onclick="gbChoose('D')"><span>🏬</span><b>Wholesaler / Distributor</b><small>Minimum order: 7.5 MT (7,500 kg)<br>Wholesale rates and bulk dispatch</small></button>
+  </div>
+  <p class="gb-muted" style="font-size:12px;margin:18px 0 0">You can change your category anytime from the store.</p>
+  <button class="gb-btn secondary" style="margin-top:14px" onclick="gbShowLogin()">Owner Admin Login</button>
+ </div>
+</div>
+<div id="gb-admin-login">
+ <div class="gb-modal">
+  <button class="gb-btn secondary" style="float:right" onclick="gbHideLogin()">Close</button>
+  <h2>Green Basket Admin Login</h2><p class="gb-muted">Owner access only • greenbacket@gmail.com</p>
+  <form onsubmit="return gbLogin(event)">
+   <label>Email address</label><input class="gb-field" id="gb-admin-email" type="email" autocomplete="username" required placeholder="Admin email">
+   <label>Password</label><input class="gb-field" id="gb-admin-password" type="password" autocomplete="current-password" required placeholder="Password">
+   <button class="gb-btn" style="width:100%" type="submit">Login to Dashboard</button>
+   <p id="gb-login-error" style="color:#b32626;font-size:13px"></p>
+  </form>
+ </div>
+</div>
+<div id="gb-admin">
+ <div class="gb-admin-shell">
+  <header class="gb-admin-top"><div><b style="font-size:22px;color:#155c2a">🌿 Green Basket Admin</b><div class="gb-muted">Store control centre</div></div><div><button class="gb-btn secondary" onclick="gbCloseAdmin()">Open Store</button> <button class="gb-btn red" onclick="gbLogout()">Logout</button></div></header>
+  <div class="gb-admin-grid">
+   <nav class="gb-admin-nav">
+    <button onclick="gbAdminTab('dashboard')">▦ Dashboard</button>
+    <button onclick="gbAdminTab('products')">▤ Products & Pricing</button>
+    <button onclick="gbAdminTab('orders')">▣ Orders</button>
+    <button onclick="gbAdminTab('inventory')">▥ Inventory</button>
+    <button onclick="gbAdminTab('shipping')">➜ Shipping & Delivery</button>
+    <button onclick="gbAdminTab('customers')">♙ Customers</button>
+    <button onclick="gbAdminTab('content')">✎ Website Content</button>
+    <button onclick="gbAdminTab('settings')">⚙ Store Settings</button>
+   </nav>
+   <main class="gb-admin-main" id="gb-admin-view"></main>
+  </div>
+ </div>
+</div>
+
+<script>
+/* Role selection intentionally resets on every fresh page load/refresh. */
+let GB_ACTIVE_ROLE='';
+const GB_ORIGINAL_PRODUCTS=S.map(x=>({...x}));
+const GB_ADMIN_EMAIL='greenbacket@gmail.com';
+const GB_ADMIN_PASSWORD='greenbacket5252';
+const gbRead=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
+const gbWrite=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+let GB_PRICE_OVERRIDES=gbRead('gb-price-overrides',{});
+let GB_STORE=gbRead('gb-store-settings',{name:'Green Basket',phone:'',announcement:'Fresh quality • Bulk supply across India'});
+let GB_CONTENT=gbRead('gb-site-content',{});
+function gbChoose(role){
+ GB_ACTIVE_ROLE=role;C={};sv();
+ const list=GB_ORIGINAL_PRODUCTS.filter(p=>p.t===role||p.t==='Q').map(p=>({...p,...(GB_PRICE_OVERRIDES[p.id]||{})}));SEL={};QT={};
+ S.splice(0,S.length,...list);
+ document.getElementById('gb-role-gate').style.display='none';
+ route();gbUpdateRoleNotice();
+}
+function gbUpdateRoleNotice(){
+ let n=document.getElementById('gb-role-notice');if(n)n.remove();
+ const app=document.getElementById('app');if(!app)return;
+ n=document.createElement('div');n.id='gb-role-notice';
+ n.style.cssText='margin:12px auto;padding:11px 14px;max-width:1200px;border-radius:10px;background:#eff8ef;color:#145c2a;font-weight:700;display:flex;justify-content:space-between;gap:10px;align-items:center';
+ n.innerHTML=`<span>${GB_ACTIVE_ROLE==='D'?'🏬 Wholesale / Distributor • MOQ 7,500 kg':'🛒 Retailer • MOQ 100 kg'}</span><button class="gb-btn" onclick="gbChangeRole()">Change category</button>`;
+ app.prepend(n);
+}
+function gbChangeRole(){document.getElementById('gb-role-gate').style.display='flex'}
+function gbShowLogin(){document.getElementById('gb-admin-login').style.display='flex'}
+function gbHideLogin(){document.getElementById('gb-admin-login').style.display='none'}
+function gbLogin(e){
+ e.preventDefault();
+ const email=document.getElementById('gb-admin-email').value.trim().toLowerCase(),pass=document.getElementById('gb-admin-password').value;
+ if(email!==GB_ADMIN_EMAIL||pass!==GB_ADMIN_PASSWORD){document.getElementById('gb-login-error').textContent='Incorrect email or password.';return false}
+ gbHideLogin();document.getElementById('gb-admin').style.display='block';gbAdminTab('dashboard');return false;
+}
+function gbCloseAdmin(){document.getElementById('gb-admin').style.display='none'}
+function gbLogout(){gbCloseAdmin();document.getElementById('gb-admin-password').value=''}
+function gbAdminTab(tab){
+ const el=document.getElementById('gb-admin-view');
+ const orders=gbRead('gb-orders',[]),inventory=gbRead('gb-inventory',{}),customers=gbRead('gb-customers',[]);
+ if(tab==='dashboard'){
+  el.innerHTML=`<h2>Dashboard Overview</h2><div class="gb-admin-cards"><div class="gb-admin-card">Total orders<strong>${orders.length}</strong></div><div class="gb-admin-card">Products<strong>${GB_ORIGINAL_PRODUCTS.length}</strong></div><div class="gb-admin-card">Customer records<strong>${customers.length}</strong></div><div class="gb-admin-card">Active store<strong>${GB_STORE.name}</strong></div></div><div class="gb-admin-note">Use the sections on the left to manage prices, inventory, shipping, content and store details.</div><h3>Recent orders</h3>${gbOrdersTable(orders.slice(-10).reverse())}`;
+ }else if(tab==='products'){
+  el.innerHTML=`<h2>Products & Pricing</h2><p class="gb-admin-note">Edit prices and minimum order quantities separately for Retailer and Distributor accounts. Changes are saved in this browser.</p><div class="gb-admin-table-wrap"><table class="gb-admin-table"><tr><th>Buyer type</th><th>Product</th><th>Price ₹/kg</th><th>MOQ kg</th><th>Pack / Step kg</th></tr>${GB_ORIGINAL_PRODUCTS.filter(p=>p.t!=='Q').map(p=>{let v={...p,...(GB_PRICE_OVERRIDES[p.id]||{})};return `<tr><td>${p.t==='R'?'Retailer':'Distributor'}</td><td>${p.n}</td><td><input id="gbp-${p.id}" type="number" min="0" value="${v.price}"></td><td><input id="gbm-${p.id}" type="number" min="1" value="${v.min}"></td><td><input id="gbs-${p.id}" type="number" min="1" value="${v.step}"></td></tr>`}).join('')}</table></div><p style="margin-top:14px"><button class="gb-btn" onclick="gbSavePrices()">Save all product changes</button></p>`;
+ }else if(tab==='orders'){
+  el.innerHTML=`<h2>Order Management</h2><p>${orders.length} orders recorded in this browser.</p>${gbOrdersTable(orders.slice().reverse())}`;
+ }else if(tab==='inventory'){
+  el.innerHTML=`<h2>Inventory Management</h2><p class="gb-muted">Set stock quantities for product items.</p><div class="gb-admin-table-wrap"><table class="gb-admin-table"><tr><th>Product</th><th>Available stock (kg)</th><th>Status</th></tr>${GB_ORIGINAL_PRODUCTS.map(p=>`<tr><td>${p.n}</td><td><input id="gbi-${p.id}" type="number" min="0" value="${inventory[p.id]??0}"></td><td>${(inventory[p.id]??0)>0?'In stock':'Not set'}</td></tr>`).join('')}</table></div><button class="gb-btn" style="margin-top:14px" onclick="gbSaveInventory()">Save inventory</button>`;
+ }else if(tab==='shipping'){
+  el.innerHTML=`<h2>Shipping & Delivery</h2><p class="gb-muted">Retailer transport rates are per kg. Distributor transport is quotation-based and must be verified by the owner.</p><label>North India ₹/kg</label><input id="gbship-N" type="number" value="${Z.N[1]}"><label>South India ₹/kg</label><input id="gbship-S" type="number" value="${Z.S[1]}"><label>Jammu & Kashmir ₹/kg</label><input id="gbship-J" type="number" value="${Z.J[1]}"><p style="margin-top:12px"><button class="gb-btn" onclick="gbSaveShipping()">Save shipping rates</button></p><div class="gb-admin-note">Distributor distance-based freight: quotation required; do not show a fixed charge until verified.</div>`;
+ }else if(tab==='customers'){
+  el.innerHTML=`<h2>Customers</h2><p>${customers.length} locally recorded customer entries.</p><div class="gb-admin-table-wrap"><table class="gb-admin-table"><tr><th>Name</th><th>Phone</th><th>Type</th></tr>${customers.map(c=>`<tr><td>${c.name||''}</td><td>${c.phone||''}</td><td>${c.type||''}</td></tr>`).join('')}</table></div><div class="gb-admin-note">Customer records require a server-side order/registration backend for reliable multi-device storage.</div>`;
+ }else if(tab==='content'){
+  el.innerHTML=`<h2>Website Content Editor</h2><label>Homepage announcement</label><input id="gb-ann" value="${GB_STORE.announcement||''}"><label>About / brand description</label><textarea id="gb-about" rows="5">${GB_CONTENT.about||''}</textarea><label>Contact email</label><input id="gb-email" value="${GB_CONTENT.email||''}"><button class="gb-btn" style="margin-top:12px" onclick="gbSaveContent()">Save content</button><div class="gb-admin-note">This starter editor stores editable text locally. Full page-builder control, image uploads and cross-device publishing need a secured CMS backend.</div>`;
+ }else{
+  el.innerHTML=`<h2>Store Settings</h2><label>Store / brand name</label><input id="gb-brand" value="${GB_STORE.name||''}"><label>Contact phone / WhatsApp</label><input id="gb-phone" value="${GB_STORE.phone||''}"><button class="gb-btn" style="margin-top:12px" onclick="gbSaveSettings()">Save store settings</button><div class="gb-admin-note">Admin access currently runs in the browser. Do not use this client-only login to protect a live business website; credentials are visible in page source. Production security requires server-side authentication.</div>`;
+ }
+}
+function gbOrdersTable(a){return `<div class="gb-admin-table-wrap"><table class="gb-admin-table"><tr><th>Order ID</th><th>Date</th><th>Buyer</th><th>Amount</th><th>Action</th></tr>${a.map((o,i)=>`<tr><td>${o.id||'—'}</td><td>${o.date||'—'}</td><td>${o.name||'—'}</td><td>₹${o.total||o.t||0}</td><td><button class="gb-btn secondary" onclick="gbDeleteOrder('${o.id||''}')">Delete</button></td></tr>`).join('')||'<tr><td colspan="5">No orders recorded yet.</td></tr>'}</table></div>`}
+function gbDeleteOrder(id){let a=gbRead('gb-orders',[]);a=a.filter(x=>x.id!==id);gbWrite('gb-orders',a);gbAdminTab('orders')}
+function gbSavePrices(){
+ GB_ORIGINAL_PRODUCTS.filter(p=>p.t!=='Q').forEach(p=>{
+  const pe=document.getElementById('gbp-'+p.id),me=document.getElementById('gbm-'+p.id),se=document.getElementById('gbs-'+p.id);
+  if(!pe||!me||!se)return;
+  const price=Number(pe.value),min=Number(me.value),step=Number(se.value);
+  if(Number.isFinite(price)&&price>=0&&min>0&&step>0)GB_PRICE_OVERRIDES[p.id]={price,min,step};
+ });
+ gbWrite('gb-price-overrides',GB_PRICE_OVERRIDES);
+ /* Apply immediately to the currently selected storefront as well as future visits. */
+ S.forEach(p=>{if(GB_PRICE_OVERRIDES[p.id])Object.assign(p,GB_PRICE_OVERRIDES[p.id]);});
+ route(true);gbAdminTab('products');
+ alert('All retailer / distributor prices, MOQ and pack steps saved and applied across the storefront.');
+}
+function gbSaveInventory(){let a={};GB_ORIGINAL_PRODUCTS.forEach(p=>a[p.id]=Number(document.getElementById('gbi-'+p.id).value)||0);gbWrite('gb-inventory',a);alert('Inventory saved.')}
+function gbSaveShipping(){Z.N[1]=Number(document.getElementById('gbship-N').value);Z.S[1]=Number(document.getElementById('gbship-S').value);Z.J[1]=Number(document.getElementById('gbship-J').value);alert('Shipping rates saved for this browser.')}
+function gbSaveSettings(){GB_STORE.name=document.getElementById('gb-brand').value;GB_STORE.phone=document.getElementById('gb-phone').value;gbWrite('gb-store-settings',GB_STORE);alert('Store settings saved.')}
+function gbSaveContent(){GB_STORE.announcement=document.getElementById('gb-ann').value;GB_CONTENT.about=document.getElementById('gb-about').value;GB_CONTENT.email=document.getElementById('gb-email').value;gbWrite('gb-store-settings',GB_STORE);gbWrite('gb-site-content',GB_CONTENT);alert('Content saved in this browser.')}
+
+/* Record placed orders before the existing checkout clears the cart. */
+const gbOriginalPlace=place;
+place=function(){
+ const buyer={name:document.getElementById('a1')?.value||'',phone:document.getElementById('a2')?.value||'',address:document.getElementById('a3')?.value||'',city:document.getElementById('a4')?.value||'',pin:document.getElementById('a5')?.value||'',gstin:document.getElementById('a6')?.value||''};
+ const total=sum()+trn(),items=cl().map(x=>({product:x.s.n,quantity:x.q,rate:x.s.price}));
+ const orderId='GB'+Date.now().toString().slice(-6);
+ let all=gbRead('gb-orders',[]);all.push({id:orderId,date:new Date().toLocaleString(),name:buyer.name,phone:buyer.phone,address:buyer.address,city:buyer.city,pin:buyer.pin,gstin:buyer.gstin,type:GB_ACTIVE_ROLE==='D'?'Distributor':'Retailer',total,items});
+ gbWrite('gb-orders',all);
+ let cs=gbRead('gb-customers',[]);if(buyer.phone&&!cs.some(c=>c.phone===buyer.phone))cs.push({name:buyer.name,phone:buyer.phone,type:GB_ACTIVE_ROLE==='D'?'Distributor':'Retailer'});gbWrite('gb-customers',cs);
+ gbOriginalPlace();
+};
+const gbShippingSaved=gbRead('gb-shipping',null);
+if(gbShippingSaved){Z.N[1]=gbShippingSaved.N;Z.S[1]=gbShippingSaved.S;Z.J[1]=gbShippingSaved.J;}
+const gbOldSaveShipping=gbSaveShipping;
+gbSaveShipping=function(){gbOldSaveShipping();gbWrite('gb-shipping',{N:Z.N[1],S:Z.S[1],J:Z.J[1]});};
+(function(){
+ const hd=document.querySelector('header .hd');
+ if(hd&&!document.getElementById('gb-admin-header')){
+  const b=document.createElement('button');b.id='gb-admin-header';b.className='gb-admin-trigger';b.type='button';b.title='Owner Admin Login';b.setAttribute('aria-label','Owner Admin Login');b.innerHTML='⚙';
+  b.onclick=gbShowLogin;
+  const cart=document.getElementById('hc');hd.insertBefore(b,cart);
+ }
+ document.getElementById('gb-role-gate').style.display='flex';
+})();
+
+</script>
+</body></html>
